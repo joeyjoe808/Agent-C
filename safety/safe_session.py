@@ -81,3 +81,20 @@ class SafeSession:
     def is_active(self) -> bool:
         """Check if session is active."""
         return self.status == "active" and not self.stop_requested
+
+    def terminate(self, reason: str = "Timeout exceeded") -> None:
+        """
+        Terminate session execution.
+
+        This is the enforcement mechanism - sets flags to stop execution.
+
+        Args:
+            reason: Reason for termination
+        """
+        print(f"\n🛑 TERMINATING SESSION: {reason}")
+        print(f"   Session ID: {self.session_id}")
+        print(f"   Duration: {self.metrics.get_duration():.1f}s")
+        print(f"   Tool calls: {len(self.metrics.tool_calls)}")
+
+        self.status = "terminated"
+        self.stop_requested = True
