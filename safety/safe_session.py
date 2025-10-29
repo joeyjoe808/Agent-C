@@ -91,7 +91,7 @@ class SafeSession:
         Args:
             reason: Reason for termination
         """
-        print(f"\n🛑 TERMINATING SESSION: {reason}")
+        print(f"\n[STOP] TERMINATING SESSION: {reason}")
         print(f"   Session ID: {self.session_id}")
         print(f"   Duration: {self.metrics.get_duration():.1f}s")
         print(f"   Tool calls: {len(self.metrics.tool_calls)}")

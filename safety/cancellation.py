@@ -56,15 +56,15 @@ class CancellationHandler:
 
     def _signal_handler(self, signum, frame):
         """Handle SIGINT (Ctrl+C)"""
-        print("\n\n🛑 Cancellation requested (Ctrl+C)")
-        print("⏳ Shutting down gracefully...")
+        print("\n\n[STOP] Cancellation requested (Ctrl+C)")
+        print("[...] Shutting down gracefully...")
 
         self.request_cancellation("User pressed Ctrl+C")
 
         # Perform cleanup
         result = self.cleanup()
 
-        print(f"\n✅ Session {result['session_id']} cancelled")
+        print(f"\n[OK] Session {result['session_id']} cancelled")
         print(f"   Duration: {result['duration']:.1f}s")
         print(f"   Tool calls: {result['tool_calls']}")
         print(f"   Reasoning steps: {result['reasoning_steps']}")
