@@ -294,3 +294,59 @@ def test_safe_session_multiple_sessions_independent():
     assert session2.is_active() is True, "Session2 should still be active"
 
     # CRITICAL: Multiple sessions are completely independent
+
+
+def test_agent_factory_without_session_parameter():
+    """
+    CRITICAL: Prove existing factory calls still work without session.
+
+    This MUST pass - backward compatibility requirement.
+    """
+    from agency_code_agent.agency_code_agent import create_agency_code_agent
+
+    # Create agent OLD WAY (no session parameter)
+    agent = create_agency_code_agent(model="claude-haiku-4-5-20251001")
+
+    # Should work exactly as before
+    assert agent is not None
+    assert agent.name == "AgencyCodeAgent"
+    # This PROVES backward compatibility
+
+
+def test_agent_factory_with_session_parameter():
+    """
+    Test factory accepts optional session parameter.
+    """
+    from agency_code_agent.agency_code_agent import create_agency_code_agent
+    from safety.safe_session import SafeSession
+
+    session = SafeSession()
+
+    # Create agent NEW WAY (with session)
+    agent = create_agency_code_agent(
+        model="claude-haiku-4-5-20251001",
+        session=session
+    )
+
+    # Agent should work
+    assert agent is not None
+    assert agent.name == "AgencyCodeAgent"
+    assert session.session_id is not None
+
+
+def test_planner_factory_with_session_parameter():
+    """
+    Test planner factory also accepts session parameter.
+    """
+    from planner_agent.planner_agent import create_planner_agent
+    from safety.safe_session import SafeSession
+
+    session = SafeSession()
+
+    agent = create_planner_agent(
+        model="claude-haiku-4-5-20251001",
+        session=session
+    )
+
+    assert agent is not None
+    assert agent.name == "PlannerAgent"
