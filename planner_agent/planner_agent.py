@@ -56,10 +56,10 @@ def create_planner_agent(
 
     # Add SafeSessionHook if session provided (backward compatible)
     if session is not None:
-        from shared.system_hooks import create_safe_session_hook
+        from shared.system_hooks import create_safe_session_hook, CombinedHook
         safe_hook = create_safe_session_hook(session)
-        # Combine hooks into list
-        hooks = [filter_hook, safe_hook]
+        # Combine hooks using CombinedHook wrapper
+        hooks = CombinedHook([filter_hook, safe_hook])
     else:
         # Just filter hook (backward compatible)
         hooks = filter_hook

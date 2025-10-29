@@ -63,10 +63,10 @@ def create_agency_code_agent(
 
     # Add SafeSessionHook if session provided (backward compatible)
     if session is not None:
-        from shared.system_hooks import create_safe_session_hook
+        from shared.system_hooks import create_safe_session_hook, CombinedHook
         safe_hook = create_safe_session_hook(session)
-        # Combine hooks into list
-        hooks = [reminder_hook, safe_hook]
+        # Combine hooks using CombinedHook wrapper
+        hooks = CombinedHook([reminder_hook, safe_hook])
     else:
         # Just reminder hook (backward compatible)
         hooks = reminder_hook

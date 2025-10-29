@@ -297,6 +297,72 @@ def create_message_filter_hook():
     return MessageFilterHook()
 
 
+class CombinedHook(AgentHooks):
+    """
+    Wrapper to combine multiple hooks into one.
+
+    Allows multiple hooks to be used together by calling each hook's
+    methods in sequence.
+
+    Example:
+        hook1 = SystemReminderHook()
+        hook2 = SafeSessionHook(session)
+        combined = CombinedHook([hook1, hook2])
+        agent = Agent(..., hooks=combined)
+    """
+
+    def __init__(self, hooks: list):
+        """
+        Initialize with list of hooks.
+
+        Args:
+            hooks: List of AgentHooks instances
+        """
+        self.hooks = hooks
+
+    async def on_start(self, context, agent):
+        """Call on_start for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_start'):
+                await hook.on_start(context, agent)
+
+    async def on_end(self, context, agent, output):
+        """Call on_end for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_end'):
+                await hook.on_end(context, agent, output)
+
+    async def on_handoff(self, context, agent, source: str):
+        """Call on_handoff for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_handoff'):
+                await hook.on_handoff(context, agent, source)
+
+    async def on_tool_start(self, context, agent, tool):
+        """Call on_tool_start for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_tool_start'):
+                await hook.on_tool_start(context, agent, tool)
+
+    async def on_tool_end(self, context, agent, tool, result: str):
+        """Call on_tool_end for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_tool_end'):
+                await hook.on_tool_end(context, agent, tool, result)
+
+    async def on_llm_start(self, context, agent, system_prompt: Optional[str], input_items: list):
+        """Call on_llm_start for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_llm_start'):
+                await hook.on_llm_start(context, agent, system_prompt, input_items)
+
+    async def on_llm_end(self, context, agent, response):
+        """Call on_llm_end for all hooks."""
+        for hook in self.hooks:
+            if hasattr(hook, 'on_llm_end'):
+                await hook.on_llm_end(context, agent, response)
+
+
 if __name__ == "__main__":
     # Test the hook creation
     hook = create_system_reminder_hook()
