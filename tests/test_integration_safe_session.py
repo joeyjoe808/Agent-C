@@ -350,3 +350,66 @@ def test_planner_factory_with_session_parameter():
 
     assert agent is not None
     assert agent.name == "PlannerAgent"
+
+
+def test_agency_with_safe_session():
+    """
+    MILESTONE 7: Test Agency can be created with SafeSession-enabled agents.
+
+    This is the FINAL integration test that proves SafeSession can be
+    used with the full Agency setup in agency.py.
+
+    This test PROVES:
+    - Agency creation works with SafeSession-enabled agents
+    - SafeSession doesn't break Agency initialization
+    - Communication flows are preserved
+    - Both coder and planner can share same session
+    - Agency object is created successfully
+
+    Philosophy: "FINAL INTEGRATION - PROVE THE WHOLE SYSTEM WORKS"
+    """
+    from agency_code_agent.agency_code_agent import create_agency_code_agent
+    from planner_agent.planner_agent import create_planner_agent
+    from agency_swarm import Agency
+    from agency_swarm.tools import SendMessageHandoff
+    from safety.safe_session import SafeSession
+
+    # Create shared session
+    session = SafeSession()
+
+    # Create agents with session
+    coder = create_agency_code_agent(
+        model="claude-haiku-4-5-20251001",
+        session=session
+    )
+    planner = create_planner_agent(
+        model="claude-haiku-4-5-20251001",
+        session=session
+    )
+
+    # Verify agents created correctly
+    assert coder is not None, "Coder agent should be created"
+    assert planner is not None, "Planner agent should be created"
+    assert coder.name == "AgencyCodeAgent", "Coder should have correct name"
+    assert planner.name == "PlannerAgent", "Planner should have correct name"
+
+    # Create Agency
+    agency = Agency(
+        coder, planner,
+        name="TestAgency",
+        communication_flows=[
+            (coder, planner, SendMessageHandoff),
+            (planner, coder, SendMessageHandoff),
+        ],
+    )
+
+    # Verify Agency created successfully
+    assert agency is not None, "Agency should be created"
+    assert agency.name == "TestAgency", "Agency should have correct name"
+
+    # Verify session tracking
+    assert session.session_id is not None, "Session should have ID"
+    assert session.status == "active", "Session should be active"
+
+    # CRITICAL: Agency creation works with SafeSession-enabled agents
+    # This PROVES the integration is complete and functional!

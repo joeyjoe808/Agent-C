@@ -30,13 +30,25 @@ litellm.modify_params = True
 # model = "anthropic/claude-sonnet-4-20250514"
 model = "anthropic/claude-haiku-4-5-20251001"  # Cost-efficient Claude Haiku 4.5
 
-# create agents
+# SafeSession tracking (optional - can be disabled via env var)
+USE_SAFE_SESSION = os.getenv("USE_SAFE_SESSION", "true").lower() == "true"
+
+if USE_SAFE_SESSION:
+    from safety.safe_session import SafeSession
+    session = SafeSession()
+    print(f"\n[SafeSession] ✅ Session tracking enabled")
+    print(f"[SafeSession] Session ID: {session.session_id}\n")
+else:
+    session = None
+    print("\n[SafeSession] ⚠️  Session tracking disabled\n")
+
+# create agents (pass session if enabled)
 planner = create_planner_agent(
-    model=model, reasoning_effort="low"
+    model=model, reasoning_effort="low", session=session
 )
 # coder = create_agency_code_agent(model="gpt-5", reasoning_effort="high")
 coder = create_agency_code_agent(
-    model=model, reasoning_effort="high"
+    model=model, reasoning_effort="high", session=session
 )
 subagent_example = create_subagent_example(
     model=model, reasoning_effort="high"
@@ -54,5 +66,10 @@ agency = Agency(
 )
 
 if __name__ == "__main__":
+    # Display session info if enabled
+    if USE_SAFE_SESSION and session:
+        print(f"[SafeSession] 🔍 Tracking session: {session.session_id}")
+        print(f"[SafeSession] Status: {session.status}\n")
+
     agency.terminal_demo(show_reasoning=False if model.startswith("anthropic") else True)
     # agency.visualize()
