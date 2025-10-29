@@ -28,11 +28,11 @@ litellm.modify_params = True
 
 # switch between models here
 # model = "anthropic/claude-sonnet-4-20250514"
-model = "gpt-5"
+model = "anthropic/claude-haiku-4-5-20251001"  # Cost-efficient Claude Haiku 4.5
 
 # create agents
 planner = create_planner_agent(
-    model=model, reasoning_effort="high"
+    model=model, reasoning_effort="low"
 )
 # coder = create_agency_code_agent(model="gpt-5", reasoning_effort="high")
 coder = create_agency_code_agent(

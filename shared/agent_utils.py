@@ -35,7 +35,7 @@ def render_instructions(template_path: str, model: str, base_path: Optional[str]
     else:
         full_path = template_path
 
-    with open(full_path, "r") as f:
+    with open(full_path, "r", encoding="utf-8") as f:
         content = f.read()
     placeholders = {
         "{cwd}": os.getcwd(),

@@ -12,6 +12,7 @@ from .read import Read
 from .todo_write import TodoWrite
 from .write import Write
 from .claude_web_search import ClaudeWebSearch
+from .web_fetch import WebFetch
 
 __all__ = [
     "Bash",
@@ -28,4 +29,5 @@ __all__ = [
     "TodoWrite",
     "Git",
     "ClaudeWebSearch",
+    "WebFetch",
 ]

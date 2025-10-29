@@ -28,6 +28,7 @@ from tools import (
     TodoWrite,
     Write,
     ClaudeWebSearch,
+    WebFetch,
 )
 
 # Get the absolute path to the current file's directory
@@ -69,6 +70,7 @@ def create_agency_code_agent(
             NotebookEdit,
             TodoWrite,
             Git,
+            WebFetch,
         ]
         + ([WebSearchTool()] if is_openai else [])
         + ([ClaudeWebSearch] if is_claude else []),

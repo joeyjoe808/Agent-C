@@ -16,6 +16,10 @@ Fully open sourced version of Claude Code built with [Agency Swarm](https://agen
 1. Create and activate a virtual environment (Python 3.13), then install deps:
 
    ```
+WINDOWS:
+   .venv\Scripts\activate.ps1 
+   python agency.py
+MAC:
    python3.13 -m venv .venv
    source .venv/bin/activate
    python -m pip install --upgrade pip
