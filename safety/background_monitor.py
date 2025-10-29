@@ -172,6 +172,10 @@ class BackgroundMonitor:
                     }
                 ))
 
+                # Auto-terminate if enabled and runaway detected
+                if self.auto_terminate:
+                    self.session.terminate(f"Runaway pattern detected: {pattern.value}")
+
         except Exception as e:
             # Graceful degradation
             self._emit_event(MonitorEvent(

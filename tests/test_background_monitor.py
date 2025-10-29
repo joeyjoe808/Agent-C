@@ -141,3 +141,64 @@ def test_monitor_event_structure():
     assert event.message == "Test timeout"
     assert event.severity == "high"
     assert event.data["elapsed"] == 100
+
+
+def test_auto_terminate_on_timeout():
+    """Test monitor auto-terminates session on timeout when enabled"""
+    session = SafeSession()
+    session.metrics.started_at = time.time() - 150  # 150s ago
+
+    config = TimeoutConfig(max_session_duration=100)  # 100s limit
+    monitor = BackgroundMonitor(session, config, check_interval=0.1, auto_terminate=True)
+
+    monitor.start()
+    time.sleep(0.5)  # Wait for check
+    monitor.stop()
+
+    # Session should be terminated
+    assert session.status == "terminated"
+    assert session.stop_requested == True
+
+
+def test_auto_terminate_on_runaway():
+    """Test monitor auto-terminates session on runaway pattern when enabled"""
+    session = SafeSession()
+
+    # Simulate infinite tool loop
+    for _ in range(6):
+        session.metrics.record_tool_call("Bash", {})
+
+    config = TimeoutConfig()
+    monitor = BackgroundMonitor(session, config, check_interval=0.1, auto_terminate=True)
+
+    monitor.start()
+    time.sleep(0.5)  # Wait for check
+    monitor.stop()
+
+    # Session should be terminated
+    assert session.status == "terminated"
+    assert session.stop_requested == True
+
+
+def test_no_auto_terminate_when_disabled():
+    """Test monitor does NOT auto-terminate when disabled (default)"""
+    session = SafeSession()
+    session.metrics.started_at = time.time() - 150  # 150s ago
+
+    config = TimeoutConfig(max_session_duration=100)  # 100s limit
+    monitor = BackgroundMonitor(session, config, check_interval=0.1, auto_terminate=False)
+
+    events = []
+    def on_event(event: MonitorEvent):
+        events.append(event)
+
+    monitor.on_event = on_event
+    monitor.start()
+    time.sleep(0.5)  # Wait for check
+    monitor.stop()
+
+    # Should detect timeout but NOT terminate
+    assert len(events) > 0
+    assert any(e.event_type == EventType.TIMEOUT.value for e in events)
+    assert session.status != "terminated"  # Still active
+    assert session.stop_requested == False
