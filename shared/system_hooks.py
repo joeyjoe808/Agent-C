@@ -1,6 +1,9 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from agents import AgentHooks, RunContextWrapper
+
+if TYPE_CHECKING:
+    from safety.safe_session import SafeSession
 
 
 class SystemReminderHook(AgentHooks):
@@ -310,3 +313,93 @@ if __name__ == "__main__":
     reminder = hook._create_reminder_message("tool_call_limit", test_todos)
     print("\nSample reminder message:")
     print(reminder)
+
+
+class SafeSessionHook(AgentHooks):
+    """
+    Hook for tracking SafeSession metrics.
+
+    Design: Observer pattern (passive monitoring)
+    Integration: Coexists with SystemReminderHook and MessageFilterHook
+
+    Example:
+        session = SafeSession()
+        hook = SafeSessionHook(session)
+        agent = Agent(..., hooks=hook)
+    """
+
+    def __init__(self, session: 'SafeSession'):
+        """
+        Initialize hook with session reference.
+
+        Args:
+            session: SafeSession instance to track metrics
+        """
+        self.session = session
+
+    async def on_tool_end(self, context: RunContextWrapper, agent, tool, result: str) -> None:
+        """
+        Record tool execution to session metrics.
+
+        Args:
+            context: Execution context
+            agent: Agent executing tool
+            tool: Tool that was executed
+            result: Tool execution result
+        """
+        try:
+            tool_name = tool.__class__.__name__
+            # Extract args from tool if available
+            args = {}
+            if hasattr(tool, '__dict__'):
+                args = {k: v for k, v in tool.__dict__.items()
+                        if not k.startswith('_')}
+
+            self.session.record_tool_call(tool_name, args)
+        except Exception as e:
+            # Graceful degradation - don't break execution
+            print(f"Warning: SafeSessionHook failed to record tool call: {e}")
+
+    async def on_handoff(self, context: RunContextWrapper, agent, source: str) -> None:
+        """
+        Record agent handoff to session metrics.
+
+        Args:
+            context: Execution context
+            agent: Target agent
+            source: Source agent name
+        """
+        try:
+            from_agent = source
+            to_agent = agent.name if hasattr(agent, 'name') else "Unknown"
+            self.session.metrics.record_handoff(from_agent, to_agent)
+        except Exception as e:
+            print(f"Warning: SafeSessionHook failed to record handoff: {e}")
+
+    async def on_llm_start(self, context: RunContextWrapper, agent, system_prompt: Optional[str], input_items: list) -> None:
+        """
+        Increment reasoning step counter.
+
+        Args:
+            context: Execution context
+            agent: Agent making LLM call
+            system_prompt: System prompt
+            input_items: Input items
+        """
+        try:
+            self.session.metrics.increment_reasoning_steps()
+        except Exception as e:
+            print(f"Warning: SafeSessionHook failed to increment reasoning: {e}")
+
+
+def create_safe_session_hook(session: 'SafeSession') -> SafeSessionHook:
+    """
+    Create and return a SafeSessionHook instance.
+
+    Args:
+        session: SafeSession instance to track
+
+    Returns:
+        SafeSessionHook instance bound to session
+    """
+    return SafeSessionHook(session)
