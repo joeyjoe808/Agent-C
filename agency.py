@@ -36,11 +36,11 @@ USE_SAFE_SESSION = os.getenv("USE_SAFE_SESSION", "true").lower() == "true"
 if USE_SAFE_SESSION:
     from safety.safe_session import SafeSession
     session = SafeSession()
-    print(f"\n[SafeSession] ✅ Session tracking enabled")
+    print(f"\n[SafeSession] [OK] Session tracking enabled")
     print(f"[SafeSession] Session ID: {session.session_id}\n")
 else:
     session = None
-    print("\n[SafeSession] ⚠️  Session tracking disabled\n")
+    print("\n[SafeSession] [WARN] Session tracking disabled\n")
 
 # create agents (pass session if enabled)
 planner = create_planner_agent(
@@ -68,7 +68,7 @@ agency = Agency(
 if __name__ == "__main__":
     # Display session info if enabled
     if USE_SAFE_SESSION and session:
-        print(f"[SafeSession] 🔍 Tracking session: {session.session_id}")
+        print(f"[SafeSession] [TRACKING] Session: {session.session_id}")
         print(f"[SafeSession] Status: {session.status}\n")
 
     agency.terminal_demo(show_reasoning=False if model.startswith("anthropic") else True)

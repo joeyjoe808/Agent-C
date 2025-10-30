@@ -1,121 +1,253 @@
-# 👨‍💻 Agency Code
+# Agency-Code: AI Developer Agent
 
-Fully open sourced version of Claude Code built with [Agency Swarm](https://agency-swarm.ai/welcome/overview) framework.
+**An intelligent AI development assistant powered by Claude with built-in safety architecture.**
 
-## 🔥 Key features
+> **Forked from**: [VRSEN/Agency-Code](https://github.com/VRSEN/Agency-Code.git)
+> Enhanced with production-ready safety guardrails, auto-termination, and webhook integration.
 
-- **Developer Agent**: The primary developer agent with the same set of tools as Claude Code.
-- **Planner Agent**: Planner agent that acts exactly as Claude Code's planning mode.
-- **Full Control**: Full access to all 14 tools from Claude Code, agency structure and prompts.
-- **Easy Subagent Creation**: Simple subagent creation process using Cursor or Claude Code itself.
+**Key Features**: Multi-agent system (Coder + Planner) • Timeout monitoring • Runaway detection • WebSearch/WebFetch intelligence • Webhook-ready hooks • 181+ tests
 
-👨‍💻 Additionally, you can experiment by adding other features from Agency Swarm framework, unsupported by Claude Code, like multi-level hybrid communication flows.
+📖 **For detailed documentation, architecture, and integration examples**, see [ASKME.md](ASKME.md)
 
-## 🚀 Quick start
+---
 
-1. Create and activate a virtual environment (Python 3.13), then install deps:
+## 🚀 Quick Start
 
-   ```
-WINDOWS:
-   .venv\Scripts\activate.ps1 
-   python agency.py
-MAC:
-   python3.13 -m venv .venv
-   source .venv/bin/activate
-   python -m pip install --upgrade pip
-   python -m pip install -r requirements.txt
-   ```
+### Prerequisites
 
-   > ⚠️ There is currently a bug in LiteLLM with Anthropic reasoning models.  
-   > To fix this, after installing the requirements, run:
-   >
-   > ```
-   > python -m pip install git+https://github.com/openai/openai-agents-python.git@main
-   > ```
+- **Python 3.13+**
+- **Git**
+- **Anthropic API Key** ([Get one here](https://console.anthropic.com/))
 
-2. Try the agency (terminal demo):
+### Installation
 
-   ```
-   sudo python agency.py
-   ```
+#### **Mac/Linux**
 
-- Don't forget to run the command with sudo if you're on macOS.
-- The agent won't be able to edit files outside of your current directory.
+```bash
+# 1. Clone the repository
+git clone https://github.com/joeyjoe808/Agent-C.git
+cd Agent-C
 
-## 🔧 Adding Subagents
+# 2. Create and activate virtual environment
+python3.13 -m venv .venv
+source .venv/bin/activate
 
-- To add a subagent, simply prompt _Cursor_ or _Claude Code_ itself. For example:
+# 3. Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
 
-  ```
-  Ask me questions until you have enough context to create a QA tester subagent for my project
-  ```
-
-  After that it should create another folder in the root directory called `qa_tester_agent/` and modify the `agency.py` structure.
-
-- Additionally, there is a template in the `subagent_example/` folder that you can use to create a new subagent yourself.
-
-## 📝 Demo Tasks
-
-### 🌌 Particle Galaxy Simulator
-
-```
-Create a full-screen interactive particle galaxy simulator using HTML5 Canvas and JavaScript. Include:
-  - 2000 glowing particles that form a spiral galaxy shape
-  - Particles should have different colors (blues, purples, pinks, whites) and sizes
-  - Mouse movement creates gravitational pull that attracts/repels particles
-  - Click to create a "supernova" explosion effect that pushes particles outward
-  - Add trailing effects for particle movement
-  - Include controls to adjust: particle count, rotation speed, color themes (nebula/aurora/cosmic)
-  - Add background stars that twinkle
-  - Display FPS counter and particle count
-  - Make it responsive and add a glow/bloom effect to particles
-  All in a single HTML file with inline CSS and JavaScript. Make it mesmerizing and cinematic.
+# 4. Fix Anthropic compatibility (important!)
+pip install git+https://github.com/openai/openai-agents-python.git@main
 ```
 
-### 🎨 Multiplayer Pixel Art Board
+#### **Windows (PowerShell)**
 
-```
-Create a shared pixel art canvas like r/place using Next.js and Socket.io:
+```powershell
+# 1. Clone the repository
+git clone https://github.com/joeyjoe808/Agent-C.git
+cd Agent-C
 
-- 50x50 grid where each player can color one pixel at a time
-- 16 color palette at the bottom
-- See other players' cursors moving in real-time with their names
-- 5-second cooldown between placing pixels (show countdown on cursor)
-- Minimap in corner showing full canvas
-- Chat box for players to coordinate
-- Download canvas as image button
-- Show "Player X placed a pixel" notifications
-- Persist canvas state in JSON file
-- Mobile friendly with pinch to zoom
+# 2. Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate.ps1
 
-Simple and fun - just a shared canvas everyone can draw on together. Add rainbow gradient background.
-```
+# 3. Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
 
-### 📚 Agency Swarm PDF Chat App
-
-```
-Create a Streamlit PDF chat app using PyPDF2 and OpenAI API with Agency Swarm framework:
-- File uploader accepting multiple PDFs
-- Extract and display PDF text in expandable sections
-- Chat interface where users ask questions about the PDFs
-- Use agency-swarm to create an agent that can answer questions about the PDFs. (Reference below)
-   - Use file_ids parameter in agency.get_response_sync method for allowing the agent to use the uploaded files.
-- Create an endpoint for uploading files to openai. (Reference below)
-   - Set purpose to "user_data".
-   - Attach file in file_ids parameter of get_response method in agency-swarm. (Check reference.)
-- OPENAI_API_KEY is provided in the ./.env file. Copy it to the .env file in the backend server folder.
-- Export conversation as markdown
-Include sample questions and nice chat UI with user/assistant message bubbles.
-
-References:
-- agency-swarm quick start: https://agency-swarm.ai/welcome/getting-started/from-scratch
-- Openai API file upload reference: https://platform.openai.com/docs/api-reference/files/create
-
-Before starting the task make sure to first use the WebSearch tool to read the references above.
-
-**Important**: The agency-swarm integration must **actually** work. Do not use any placeholder messages and do not come back to me until it's fully tested and completed. Run the backend server and test the integration.
+# 4. Fix Anthropic compatibility (important!)
+pip install git+https://github.com/openai/openai-agents-python.git@main
 ```
 
-## Contributing
+#### **Windows (Command Prompt)**
 
-We'll be supporting and improving this repo in the future. Any contributions are welcome! Please feel free to submit a pull request.
+```cmd
+REM 1. Clone the repository
+git clone https://github.com/joeyjoe808/Agent-C.git
+cd Agent-C
+
+REM 2. Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate.bat
+
+REM 3. Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+REM 4. Fix Anthropic compatibility (important!)
+pip install git+https://github.com/openai/openai-agents-python.git@main
+```
+
+---
+
+## 🔑 Configuration
+
+### Create `.env` File
+
+The agent looks for a `.env` file in the root directory. Create it with your API key:
+
+**Option 1: Create from scratch**
+
+```bash
+# Create .env file
+echo "ANTHROPIC_API_KEY=your_api_key_here" > .env
+
+# On Windows (PowerShell):
+# "ANTHROPIC_API_KEY=your_api_key_here" | Out-File -FilePath .env -Encoding ASCII
+```
+
+**Option 2: Use example template (if provided)**
+
+```bash
+cp .env.example .env
+nano .env  # or notepad .env on Windows
+```
+
+### `.env` File Contents
+
+```env
+# Required: Your Anthropic API key
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional: Enable/disable safety session tracking (default: true)
+USE_SAFE_SESSION=true
+
+# Optional: Model selection (default: claude-haiku-4-5)
+MODEL=anthropic/claude-haiku-4-5-20251001
+```
+
+**Get your API key**: https://console.anthropic.com/settings/keys
+
+---
+
+## ▶️ Run Agency-Code
+
+```bash
+# Activate virtual environment (if not already activated)
+source .venv/bin/activate  # Mac/Linux
+# .venv\Scripts\activate     # Windows
+
+# Run the agent
+python agency.py
+
+# On Mac, use sudo if you get permission errors:
+sudo python agency.py
+```
+
+**You'll see:**
+```
+[SafeSession] [OK] Session tracking enabled
+[SafeSession] Session ID: abc123...
+
+User: [Type your request here]
+```
+
+### Example Requests
+
+```
+User: Create a FastAPI hello world app
+User: Fix the bug in database.py line 42
+User: Research best practices for JWT authentication
+User: Help me refactor this function to be more readable
+```
+
+---
+
+## 🛡️ Safety Features
+
+**Built-in Protection:**
+- ✅ **Timeout Monitoring**: 30min session / 5min turn / 2min tool timeouts
+- ✅ **Runaway Detection**: Catches infinite loops (5+ same tool calls)
+- ✅ **Auto-Termination**: Optional auto-kill on timeout/runaway (disabled by default)
+- ✅ **Graceful Cancellation**: Press Ctrl+C to save state and exit cleanly
+
+**Webhook Integration:**
+- ✅ **Hook System**: Triggers on every tool execution and agent handoff
+- ✅ **Perfect for APIs**: Use as backend for your web application
+- ✅ **Real-time Tracking**: Session metrics (tool calls, duration, reasoning steps)
+
+See [ASKME.md](ASKME.md) for webhook integration examples and detailed safety documentation.
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run safety architecture tests (44 tests)
+pytest tests/test_session_metrics.py \
+       tests/test_safe_session.py \
+       tests/test_timeout_monitor.py \
+       tests/test_runaway_detector.py \
+       tests/test_background_monitor.py \
+       tests/test_cancellation.py -v
+```
+
+---
+
+## 📂 Project Structure
+
+```
+Agency-Code/
+├── agency.py                 # Main entry point
+├── .env                      # API keys (you create this)
+├── requirements.txt          # Dependencies
+│
+├── agency_code_agent/        # Coder agent
+├── planner_agent/            # Planner agent
+├── safety/                   # Safety architecture
+├── tools/                    # 14+ tool implementations
+├── shared/                   # Utilities & hooks
+└── tests/                    # 181+ automated tests
+```
+
+---
+
+## 🔗 Links
+
+- **Repository**: https://github.com/joeyjoe808/Agent-C
+- **Issues**: https://github.com/joeyjoe808/Agent-C/issues
+- **Original Fork**: https://github.com/VRSEN/Agency-Code
+- **Agency Swarm**: https://agency-swarm.ai/
+
+---
+
+## 📖 Documentation
+
+**For detailed information**, see [ASKME.md](ASKME.md):
+- Complete feature documentation
+- Webhook integration examples
+- Safety architecture details
+- API integration patterns
+- Demo tasks and examples
+- Architecture diagrams
+
+**For developers**, see [AGENTS.md](AGENTS.md):
+- Repository structure and guidelines
+- Coding style and conventions
+- Testing guidelines
+- Commit and PR guidelines
+
+---
+
+## 🤝 Contributing
+
+Fully open-source - build, refine, and improve as needed!
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests first (TDD)
+4. Run test suite
+5. Submit pull request
+
+---
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+**Questions?** Open an issue or check [ASKME.md](ASKME.md) for detailed docs!

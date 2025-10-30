@@ -21,12 +21,56 @@ class SystemReminderHook(AgentHooks):
 
     def __init__(self):
         self.tool_call_count = 0
+        self.aria_loaded = False  # Track if ARIA.md has been loaded
 
     async def on_start(self, context: RunContextWrapper, agent) -> None:
         """Called when agent starts processing a user message or is activated."""
+        # Check for and load ARIA.md on first run
+        if not self.aria_loaded:
+            self._load_aria_instructions(context)
+            self.aria_loaded = True
+
         # Inject reminder after every user message
         self._inject_reminder(context, "user_message")
         filter_duplicates(context)
+
+    def _load_aria_instructions(self, ctx: RunContextWrapper) -> None:
+        """
+        Load ARIA.md instructions if present in current directory.
+
+        ARIA.md contains project-specific instructions that take precedence
+        over general guidelines.
+
+        Args:
+            ctx: The run context wrapper containing threads and agency context
+        """
+        try:
+            import os
+            aria_path = os.path.join(os.getcwd(), "ARIA.md")
+
+            if os.path.exists(aria_path):
+                with open(aria_path, 'r', encoding='utf-8') as f:
+                    aria_content = f.read()
+
+                # Inject ARIA content as system reminder
+                aria_message = f"""<system-reminder>
+# Project-Specific Instructions from ARIA.md
+
+{aria_content}
+
+IMPORTANT: These project-specific instructions take precedence over general guidelines.
+Apply these instructions to ALL work in this directory.
+</system-reminder>"""
+
+                # Store in context for agent to access
+                ctx.context.set("aria_instructions", aria_message)
+                print("\n[ARIA] [OK] Loaded project-specific instructions from ARIA.md")
+            else:
+                # ARIA.md not present - this is normal for non-Agency-Code projects
+                pass
+        except Exception as e:
+            # Graceful degradation - don't break if ARIA.md missing or unreadable
+            print(f"[ARIA] [WARN] Could not load ARIA.md: {e}")
 
     async def on_end(self, context: RunContextWrapper, agent, output) -> None:
         """Called when the agent finishes processing a user message."""
