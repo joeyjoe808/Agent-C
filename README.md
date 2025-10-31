@@ -11,7 +11,36 @@
 
 ---
 
-## 🚀 Quick Start
+## ⚡ Quick Install (Recommended)
+
+Install globally with a single command:
+
+```bash
+# Install with pipx (recommended - isolated environment)
+pipx install agency-code
+
+# Or with pip
+pip install agency-code
+```
+
+Configure your API key:
+
+```bash
+# Create .env file in your working directory
+echo "ANTHROPIC_API_KEY=sk-ant-your_key_here" > .env
+```
+
+Run from anywhere:
+
+```bash
+aria
+```
+
+Get your API key: https://console.anthropic.com/settings/keys
+
+---
+
+## 🚀 Manual Installation (Development)
 
 ### Prerequisites
 
@@ -122,6 +151,15 @@ MODEL=anthropic/claude-haiku-4-5-20251001
 
 ## ▶️ Run Agency-Code
 
+**If installed via pipx/pip** (Quick Install):
+
+```bash
+# Run from anywhere
+aria
+```
+
+**If installed manually** (Development):
+
 ```bash
 # Activate virtual environment (if not already activated)
 source .venv/bin/activate  # Mac/Linux
@@ -129,6 +167,7 @@ source .venv/bin/activate  # Mac/Linux
 
 # Run the agent
 python agency.py
+# Or use: aria
 
 # On Mac, use sudo if you get permission errors:
 sudo python agency.py
