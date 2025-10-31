@@ -13,13 +13,18 @@
 
 ## ⚡ Quick Install (Recommended)
 
-Install globally with a single command:
+Install globally with these commands:
 
 ```bash
-# Install with pipx (recommended - isolated environment)
-pipx install agency-code
+# Step 1: Install agency-swarm framework
+pip install git+https://github.com/VRSEN/agency-swarm.git@main
 
-# Or with pip
+# Step 2: Install agency-code with pipx (recommended - isolated environment)
+pipx install agency-code
+# Note: pipx uses its own environment, so install agency-swarm there too:
+pipx inject agency-code git+https://github.com/VRSEN/agency-swarm.git@main
+
+# Or with pip (simpler but less isolated)
 pip install agency-code
 ```
 
