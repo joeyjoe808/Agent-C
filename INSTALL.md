@@ -9,20 +9,168 @@ This guide shows you how to:
 
 ## Quick Install (After Publishing)
 
-Once published to PyPI, users can install with a single command:
+**Requirements**: Python 3.13 (Python 3.14 not yet supported)
 
-```bash
-# Using pip
-pip install agency-code
+### Windows
 
-# Using pipx (recommended for CLI tools - installs in isolated environment)
-pipx install agency-code
-```
+```powershell
+# Step 1: Install dependencies
+python -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
 
-Then run from anywhere:
-```bash
+# Step 2: Install agency-code
+python -m pip install agency-code
+
+# Step 3: Create .env file
+"ANTHROPIC_API_KEY=sk-ant-your_key_here" | Out-File -FilePath .env -Encoding ASCII
+
+# Step 4: Run
 aria
 ```
+
+### Mac/Linux
+
+```bash
+# Step 1: Install dependencies
+pip install git+https://github.com/VRSEN/agency-swarm.git@main
+
+# Step 2: Install agency-code
+pip install agency-code
+
+# Step 3: Create .env file
+echo "ANTHROPIC_API_KEY=sk-ant-your_key_here" > .env
+
+# Step 4: Run
+aria
+```
+
+---
+
+## Troubleshooting Installation
+
+### Error: "aria is not recognized" / "command not found"
+
+This means Python's Scripts folder is not in your PATH.
+
+**Windows Solution 1** - Add to PATH (Permanent):
+```powershell
+# Run in PowerShell, then restart terminal
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\YOUR_USERNAME\AppData\Local\Programs\Python\Python313\Scripts", "User")
+```
+
+**Windows Solution 2** - Run without PATH:
+```powershell
+python -m agency
+```
+
+**Mac/Linux Solution 1** - Add to PATH (Permanent):
+```bash
+# For bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# For zsh (Mac default)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+**Mac/Linux Solution 2** - Run without PATH:
+```bash
+python -m agency
+```
+
+### Error: "Fatal error in launcher" or Broken Pip
+
+Your pip command is pointing to a missing or wrong Python installation.
+
+**Solution** - Use `python -m pip` instead:
+```powershell
+# Windows
+python -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python -m pip install agency-code
+
+# Mac/Linux
+python3 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python3 -m pip install agency-code
+```
+
+### Error: "ValueError: '3.14' is not a valid PythonVersion"
+
+agency-swarm requires Python 3.13. Python 3.14 is too new and not yet supported.
+
+**Solution** - Install Python 3.13:
+1. Download Python 3.13 from https://www.python.org/downloads/
+2. Install it
+3. Use it specifically:
+
+**Windows**:
+```powershell
+py -3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+py -3.13 -m pip install agency-code
+py -3.13 -m agency
+```
+
+**Mac/Linux**:
+```bash
+python3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python3.13 -m pip install agency-code
+python3.13 -m agency
+```
+
+### Error: "Missing Anthropic API Key"
+
+The `.env` file is missing or not in the directory where you're running `aria`.
+
+**Windows Solution**:
+```powershell
+# Navigate to the directory where you want to run aria
+cd C:\Users\YOUR_USERNAME
+
+# Create .env file
+"ANTHROPIC_API_KEY=sk-ant-your_actual_key" | Out-File -FilePath .env -Encoding ASCII
+
+# Run aria from this directory
+aria
+```
+
+**Mac/Linux Solution**:
+```bash
+# Navigate to the directory where you want to run aria
+cd ~
+
+# Create .env file
+echo "ANTHROPIC_API_KEY=sk-ant-your_actual_key" > .env
+
+# Run aria from this directory
+aria
+```
+
+**Alternative** - Set as environment variable (temporary):
+```powershell
+# Windows
+$env:ANTHROPIC_API_KEY="sk-ant-your_key"
+aria
+
+# Mac/Linux
+export ANTHROPIC_API_KEY="sk-ant-your_key"
+aria
+```
+
+### Error: "Can't have direct dependency" (When Publishing)
+
+PyPI doesn't allow git dependencies in published packages.
+
+**Solution** - Already handled in pyproject.toml. Users must install agency-swarm separately:
+```bash
+pip install git+https://github.com/VRSEN/agency-swarm.git@main
+pip install agency-code
+```
+
+### Scripts Warning: "is installed in X which is not on PATH"
+
+This is just a warning. You can either:
+1. Add the Scripts folder to PATH (see first troubleshooting section)
+2. Use `python -m agency` instead of `aria`
+3. Ignore the warning if you don't need the `aria` command
 
 ---
 

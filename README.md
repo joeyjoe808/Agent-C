@@ -13,35 +13,135 @@
 
 ## ⚡ Quick Install (Recommended)
 
-Install globally with these commands:
+**Requirements**: Python 3.13 (Python 3.14 is not yet supported)
+
+### Windows Installation
+
+```powershell
+# Step 1: Install agency-swarm framework
+python -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+
+# Step 2: Install agency-code
+python -m pip install agency-code
+
+# Step 3: Create .env file with your API key
+"ANTHROPIC_API_KEY=sk-ant-your_key_here" | Out-File -FilePath .env -Encoding ASCII
+
+# Step 4: Run aria
+aria
+```
+
+### Mac/Linux Installation
 
 ```bash
 # Step 1: Install agency-swarm framework
 pip install git+https://github.com/VRSEN/agency-swarm.git@main
 
-# Step 2: Install agency-code with pipx (recommended - isolated environment)
-pipx install agency-code
-# Note: pipx uses its own environment, so install agency-swarm there too:
-pipx inject agency-code git+https://github.com/VRSEN/agency-swarm.git@main
-
-# Or with pip (simpler but less isolated)
+# Step 2: Install agency-code
 pip install agency-code
-```
 
-Configure your API key:
-
-```bash
-# Create .env file in your working directory
+# Step 3: Create .env file with your API key
 echo "ANTHROPIC_API_KEY=sk-ant-your_key_here" > .env
-```
 
-Run from anywhere:
-
-```bash
+# Step 4: Run aria
 aria
 ```
 
-Get your API key: https://console.anthropic.com/settings/keys
+**Get your API key**: https://console.anthropic.com/settings/keys
+
+---
+
+## 🔧 Troubleshooting
+
+### Error: "aria is not recognized" (Windows)
+
+**Problem**: Python Scripts folder is not in PATH.
+
+**Solution 1** - Add to PATH (Recommended):
+```powershell
+# Run in PowerShell (restart terminal after)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\YOUR_USERNAME\AppData\Local\Programs\Python\Python313\Scripts", "User")
+```
+
+**Solution 2** - Run with python:
+```powershell
+python -m agency
+```
+
+### Error: "command not found: aria" (Mac/Linux)
+
+**Problem**: pip install directory not in PATH.
+
+**Solution 1** - Add to PATH:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+export PATH="$HOME/.local/bin:$PATH"
+
+# Then reload shell
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+**Solution 2** - Run with python:
+```bash
+python -m agency
+```
+
+### Error: "Fatal error in launcher" or broken pip
+
+**Problem**: pip is pointing to wrong Python installation.
+
+**Solution**: Use `python -m pip` instead:
+```powershell
+# Windows
+python -m pip install agency-code
+
+# Mac/Linux
+python3 -m pip install agency-code
+```
+
+### Error: "ValueError: '3.14' is not a valid PythonVersion"
+
+**Problem**: Python 3.14 is too new - agency-swarm only supports Python 3.13.
+
+**Solution**: Install Python 3.13 from https://www.python.org/downloads/
+
+Then use:
+```powershell
+# Windows - use Python 3.13 specifically
+py -3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+py -3.13 -m pip install agency-code
+py -3.13 -m agency
+
+# Mac/Linux - ensure python3.13 is installed
+python3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python3.13 -m pip install agency-code
+python3.13 -m agency
+```
+
+### Error: "Missing Anthropic API Key"
+
+**Problem**: No `.env` file or API key not set.
+
+**Solution**: Create `.env` file in the directory where you run `aria`:
+
+**Windows**:
+```powershell
+"ANTHROPIC_API_KEY=sk-ant-your_actual_key" | Out-File -FilePath .env -Encoding ASCII
+```
+
+**Mac/Linux**:
+```bash
+echo "ANTHROPIC_API_KEY=sk-ant-your_actual_key" > .env
+```
+
+**Alternative** - Set as environment variable:
+```powershell
+# Windows (temporary - current session only)
+$env:ANTHROPIC_API_KEY="sk-ant-your_key"
+
+# Mac/Linux (temporary - current session only)
+export ANTHROPIC_API_KEY="sk-ant-your_key"
+```
 
 ---
 

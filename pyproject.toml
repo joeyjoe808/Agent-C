@@ -7,7 +7,7 @@ name = "agency-code"
 version = "1.0.0"
 description = "An intelligent AI development assistant powered by Claude with built-in safety architecture"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<3.14"
 license = {text = "MIT"}
 authors = [
     {name = "Joseph Pichardo", email = "joeyjoe808@users.noreply.github.com"}
@@ -33,7 +33,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Code Generators",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Environment :: Console",

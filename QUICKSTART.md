@@ -1,67 +1,95 @@
 # Quick Start Guide - Agency-Code (aria)
 
-## One-Line Install
+**Requirements**: Python 3.13 (Python 3.14 not supported yet)
 
-```bash
-pipx install agency-code
-```
+---
 
-## First-Time Setup
+## Windows Installation
 
-```bash
-# 1. Create .env file with your API key
-echo "ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE" > .env
+```powershell
+# 1. Install dependencies
+python -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python -m pip install agency-code
 
-# 2. Run aria
+# 2. Create .env file with your API key (get from https://console.anthropic.com/settings/keys)
+"ANTHROPIC_API_KEY=sk-ant-your_key_here" | Out-File -FilePath .env -Encoding ASCII
+
+# 3. Run aria
 aria
 ```
 
-Get your API key at: https://console.anthropic.com/settings/keys
+### If `aria` command not found on Windows:
+```powershell
+# Option 1: Add to PATH (restart terminal after)
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\YOUR_USERNAME\AppData\Local\Programs\Python\Python313\Scripts", "User")
+
+# Option 2: Run with python
+python -m agency
+```
 
 ---
 
-## Commands Summary
-
-| Task | Command |
-|------|---------|
-| **Install globally** | `pipx install agency-code` |
-| **Install with pip** | `pip install agency-code` |
-| **Install from GitHub** | `pipx install git+https://github.com/joeyjoe808/Agent-C.git` |
-| **Update** | `pipx upgrade agency-code` |
-| **Uninstall** | `pipx uninstall agency-code` |
-| **Run** | `aria` |
-
----
-
-## Developer Install (Local Development)
+## Mac/Linux Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/joeyjoe808/Agent-C.git
-cd Agent-C
+# 1. Install dependencies
+pip install git+https://github.com/VRSEN/agency-swarm.git@main
+pip install agency-code
 
-# Install in editable mode
-pip install -e ".[dev]"
+# 2. Create .env file with your API key (get from https://console.anthropic.com/settings/keys)
+echo "ANTHROPIC_API_KEY=sk-ant-your_key_here" > .env
 
-# Configure
-echo "ANTHROPIC_API_KEY=sk-ant-YOUR_KEY" > .env
-
-# Run
+# 3. Run aria
 aria
 ```
 
+### If `aria` command not found on Mac/Linux:
+```bash
+# Option 1: Add to PATH
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# For Mac with zsh:
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# Option 2: Run with python
+python -m agency
+```
+
 ---
 
-## Configuration (.env file)
+## Python 3.14 Users
 
-```env
-# Required
-ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxx
+If you have Python 3.14, install Python 3.13 first from https://www.python.org/downloads/
 
-# Optional
-USE_SAFE_SESSION=true
-MODEL=anthropic/claude-haiku-4-5-20251001
+Then use:
+
+**Windows**:
+```powershell
+py -3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+py -3.13 -m pip install agency-code
+py -3.13 -m agency
 ```
+
+**Mac/Linux**:
+```bash
+python3.13 -m pip install git+https://github.com/VRSEN/agency-swarm.git@main
+python3.13 -m pip install agency-code
+python3.13 -m agency
+```
+
+---
+
+## Common Commands
+
+| Task | Windows | Mac/Linux |
+|------|---------|-----------|
+| **Install** | `python -m pip install agency-code` | `pip install agency-code` |
+| **Update** | `python -m pip install --upgrade agency-code` | `pip install --upgrade agency-code` |
+| **Uninstall** | `python -m pip uninstall agency-code` | `pip uninstall agency-code` |
+| **Run** | `aria` or `python -m agency` | `aria` or `python -m agency` |
+| **Set API Key** | `"ANTHROPIC_API_KEY=sk-ant-..." \| Out-File .env -Encoding ASCII` | `echo "ANTHROPIC_API_KEY=sk-ant-..." > .env` |
 
 ---
 
@@ -82,19 +110,26 @@ User: Refactor the database connection logic
 
 ## Troubleshooting
 
-**Problem: `aria` command not found**
-
-Solution:
-```bash
-pipx ensurepath
-# Then restart your terminal
+**Broken pip error**:
+```powershell
+# Use python -m pip instead
+python -m pip install agency-code
 ```
 
-**Problem: API key not found**
+**Missing API key error**:
+```powershell
+# Windows: Create .env in current directory
+"ANTHROPIC_API_KEY=your_key" | Out-File .env -Encoding ASCII
 
-Solution: Create `.env` file in the directory where you run `aria`:
-```bash
+# Mac/Linux: Create .env in current directory
 echo "ANTHROPIC_API_KEY=your_key" > .env
+```
+
+**Python 3.14 error**:
+```powershell
+# Install Python 3.13 and use py -3.13
+py -3.13 -m pip install agency-code
+py -3.13 -m agency
 ```
 
 ---
@@ -102,6 +137,7 @@ echo "ANTHROPIC_API_KEY=your_key" > .env
 ## Links
 
 - **Full Installation Guide**: [INSTALL.md](INSTALL.md)
-- **Documentation**: [ASKME.md](ASKME.md)
+- **Documentation**: [README.md](README.md)
 - **Repository**: https://github.com/joeyjoe808/Agent-C
 - **Get API Key**: https://console.anthropic.com/settings/keys
+- **PyPI Package**: https://pypi.org/project/agency-code/
