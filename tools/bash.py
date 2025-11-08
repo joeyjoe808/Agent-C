@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import threading
 from typing import Optional
@@ -10,10 +11,85 @@ from pydantic import Field
 _bash_execution_lock = threading.Lock()
 _bash_busy = False  # Track if a bash command is currently executing
 
+# Detect OS and configure shell at module load time
+_SYSTEM = platform.system()  # 'Windows', 'Darwin', 'Linux'
+_IS_WINDOWS = _SYSTEM == "Windows"
+_IS_MACOS = _SYSTEM == "Darwin"
+_IS_LINUX = _SYSTEM == "Linux"
+
+# Configure shell based on OS
+if _IS_WINDOWS:
+    # Try to find Git Bash first (better compatibility), fall back to PowerShell
+    _GIT_BASH = r"C:\Program Files\Git\bin\bash.exe"
+    if os.path.exists(_GIT_BASH):
+        _SHELL_CMD = [_GIT_BASH, "-c"]
+        _SHELL_TYPE = "Git Bash"
+        _USING_GIT_BASH = True
+    else:
+        _SHELL_CMD = ["powershell.exe", "-NoProfile", "-Command"]
+        _SHELL_TYPE = "PowerShell"
+        _USING_GIT_BASH = False
+else:
+    _SHELL_CMD = ["/bin/bash", "-c"]
+    _SHELL_TYPE = "Bash"
+    _USING_GIT_BASH = False
+
+
+def normalize_windows_path(command):
+    r"""Convert Windows paths to Git Bash format (C:\path -> /c/path)."""
+    if not _IS_WINDOWS or not _USING_GIT_BASH:
+        return command
+
+    import re
+
+    def convert_quoted_path(match):
+        """Convert quoted Windows path."""
+        quote = match.group(1)
+        drive = match.group(2).lower()
+        path = match.group(3).replace('\\', '/')
+        return f'{quote}/{drive}{path}{quote}'
+
+    def convert_unquoted_path(match):
+        """Convert unquoted Windows path."""
+        prefix = match.group(1)
+        drive = match.group(2).lower()
+        path = match.group(3).replace('\\', '/')
+        return f'{prefix}/{drive}{path}'
+
+    # First handle quoted paths (can contain spaces)
+    # Pattern: quote, drive, colon, backslash, anything until matching quote
+    quoted_pattern = r'(["\'])([A-Za-z]):(\\[^"\']*)\1'
+    result = re.sub(quoted_pattern, convert_quoted_path, command)
+
+    # Then handle unquoted paths (no spaces allowed)
+    # Negative lookbehind ensures we're not in a URL
+    unquoted_pattern = r'(?<!:/)(\s|^)([A-Za-z]):(\\[^\s"\'&|;]*)'
+    result = re.sub(unquoted_pattern, convert_unquoted_path, result)
+
+    return result
+
+
+def preprocess_command(command):
+    """Preprocess commands to handle OS-specific syntax."""
+    if not _IS_WINDOWS or not _USING_GIT_BASH:
+        return command
+
+    # Convert Windows paths to Git Bash format
+    # This handles common patterns like: cd C:\path, ls C:\path, etc.
+    processed = normalize_windows_path(command)
+    return processed
+
 
 class Bash(BaseTool):
     """
-    Executes a given bash command in a persistent shell session with optional timeout, ensuring proper handling and security measures.
+    Executes shell commands with full cross-platform support (Windows, macOS, Linux).
+
+    OS-Aware Execution:
+    - Windows: Uses Git Bash (if available) or PowerShell
+    - macOS: Uses /bin/bash with optional sandboxing
+    - Linux: Uses /bin/bash
+
+    Executes commands in a persistent shell session with optional timeout, ensuring proper handling and security measures.
 
     Before executing the command, please follow these steps:
 
@@ -190,12 +266,15 @@ Example: echo "first" && echo "second" && ls -la"""
         """Execute a bash command using subprocess.run with proper timeout."""
         output = ""
         try:
-            # Build execution command, sandboxing writes to CWD and /tmp on macOS when available
-            exec_cmd = ["/bin/bash", "-c", command]
-            try:
-                if os.uname().sysname == "Darwin" and os.path.exists(
-                    "/usr/bin/sandbox-exec"
-                ):
+            # Preprocess command for OS-specific syntax (e.g., Windows path conversion)
+            processed_command = preprocess_command(command)
+
+            # Build execution command based on detected OS
+            exec_cmd = _SHELL_CMD + [processed_command]
+
+            # Apply macOS sandboxing if available
+            if _IS_MACOS and os.path.exists("/usr/bin/sandbox-exec"):
+                try:
                     cwd = os.getcwd()
                     policy = f"""(version 1)
 (allow default)
@@ -212,9 +291,9 @@ Example: echo "first" && echo "second" && ls -la"""
                         "-c",
                         command,
                     ]
-            except Exception:
-                # If sandbox detection/build fails, fall back to normal execution
-                exec_cmd = ["/bin/bash", "-c", command]
+                except Exception:
+                    # If sandbox setup fails, fall back to normal execution
+                    exec_cmd = _SHELL_CMD + [command]
 
             result = subprocess.run(
                 exec_cmd,
@@ -248,7 +327,29 @@ Example: echo "first" && echo "second" && ls -la"""
         except subprocess.TimeoutExpired:
             return f"Exit code: 124\nCommand timed out after {timeout_seconds} seconds\n--- OUTPUT ---\n{output.strip()}"
         except Exception as e:
-            return f"Exit code: 1\nError executing command: {str(e)}\n--- OUTPUT ---\n{output.strip()}"
+            env_info = get_environment_info()
+            return f"""Exit code: 1
+Error executing command: {str(e)}
+
+Environment Info:
+{env_info}
+
+--- OUTPUT ---
+{output.strip()}"""
+
+    @staticmethod
+    def get_shell_info():
+        """Get information about the shell being used."""
+        return f"Shell: {_SHELL_TYPE} | OS: {_SYSTEM} | Command: {' '.join(_SHELL_CMD)}"
+
+
+def get_environment_info():
+    """Get detailed environment information for debugging."""
+    return f"""OS: {_SYSTEM}
+Shell: {_SHELL_TYPE}
+Shell Command: {' '.join(_SHELL_CMD)}
+Working Directory: {os.getcwd()}
+Python: {platform.python_version()}"""
 
 
 # Create alias for Agency Swarm tool loading (expects class name = file name)
